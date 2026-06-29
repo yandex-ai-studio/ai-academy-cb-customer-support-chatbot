@@ -36,97 +36,55 @@ A2A Customer Support Agent — это интеллектуальный аген�
 
 ## 🏗️ Архитектура
 
+```text
 ┌─────────────────────────────────────────────────────────────┐
-
 │                  A2A Client (другой агент)                  │
-
 │                 или пользовательский интерфейс              │
-
 └──────────────────────┬──────────────────────────────────────┘
-
                        │ A2A Protocol (HTTP/JSON)
-
                        ▼
-
 ┌─────────────────────────────────────────────────────────────┐
-
 │              Serverless Container (A2A Agent)               │
-
 │  ┌──────────────────────────────────────────────────────┐   │
-
-│  │  A2A Starlette Server (\_\_main\_\_.py)                  │   │
-
-│  │  \- AgentCard (публичная карточка агента)             │   │
-
-│  │  \- AgentSkill (навыки и возможности)                 │   │
-
-│  │  \- DefaultRequestHandler (обработка запросов)        │   │
-
-│  │  \- InMemoryTaskStore (хранение задач)                │   │
-
+│  │  A2A Starlette Server (__main__.py)                  │   │
+│  │  - AgentCard (публичная карточка агента)             │   │
+│  │  - AgentSkill (навыки и возможности)                 │   │
+│  │  - DefaultRequestHandler (обработка запросов)        │   │
+│  │  - InMemoryTaskStore (хранение задач)                │   │
 │  └────────────┬─────────────────────────────────────────┘   │
-
 │               │                                             │
-
 │  ┌────────────▼─────────────────────────────────────────┐   │
-
 │  │  CustomerSupportAgentExecutor (executor.py)          │   │
-
-│  │  \- Обработка A2A запросов                            │   │
-
-│  │  \- Загрузка профиля клиента                          │   │
-
-│  │  \- Формирование контекста                            │   │
-
+│  │  - Обработка A2A запросов                            │   │
+│  │  - Загрузка профиля клиента                          │   │
+│  │  - Формирование контекста                            │   │
 │  └────────────┬─────────────────────────────────────────┘   │
-
 │               │                                             │
-
 │  ┌────────────▼─────────────────────────────────────────┐   │
-
 │  │  Customer Support Agent (agent.py)                   │   │
-
-│  │  \- YandexGPT модель                                  │   │
-
-│  │  \- Инструкции для агента поддержки                   │   │
-
-│  │  \- File Search Tool (векторный поиск)                │   │
-
-│  │  \- MCP-сервер для внешних инструментов               │   │
-
+│  │  - YandexGPT модель                                  │   │
+│  │  - Инструкции для агента поддержки                   │   │
+│  │  - File Search Tool (векторный поиск)                │   │
+│  │  - MCP-сервер для внешних инструментов               │   │
 │  └────────────┬─────────────────────────────────────────┘   │
-
 │               │                                             │
-
 │  ┌────────────▼─────────────────────────────────────────┐   │
-
-│  │  Airline Client (airline\_client.py)                  │   │
-
-│  │  \- Загрузка профиля клиента                          │   │
-
-│  │  \- Форматирование контекста                          │   │
-
+│  │  Airline Client (airline_client.py)                  │   │
+│  │  - Загрузка профиля клиента                          │   │
+│  │  - Форматирование контекста                          │   │
 │  └─────────────┬────────────────────────────────────────┘   │
-
 └────────────────┼────────────────────────────────────────────┘
-
                  │
-
          ┌───────┼───────────────────────┐
-
          │       │                       │
-
          ▼       ▼                       ▼
-
 ┌────────────┐ ┌──────────────────┐ ┌─────────────────┐
-
 │ Airline    │ │  Responses API   │ │   MCP Server    │
-
 │    API     │ │   (YandexGPT)    │ │  (Airline API)  │
-
 │  (REST)    │ │                  │ │                 │
-
 └────────────┘ └──────────────────┘ └─────────────────┘
+```
+
 
 ### Компоненты
 
@@ -148,109 +106,61 @@ A2A Customer Support Agent — это интеллектуальный аген�
 
 Для быстрого развертывания выполните следующие команды:
 
-\# 1\. Настройка переменных
-
-export FOLDER\_ID=$(yc config get folder-id)
-
-export REGISTRY\_NAME="my-registry"
-
-export SA\_NAME="a2a-agent-sa"
-
-\# 2\. Сборка и загрузка образа
-
+```bash
+# 1. Настройка переменных
+export FOLDER_ID=$(yc config get folder-id)
+export REGISTRY_NAME="my-registry"
+export SA_NAME="a2a-agent-sa"
+# 2. Сборка и загрузка образа
 cd a2a-agent
-
-docker build \-t a2a-agent:latest .
-
-yc container registry create \--name ${REGISTRY\_NAME}
-
-REGISTRY\_ID=$(yc container registry get \--name ${REGISTRY\_NAME} \--format json | jq \-r '.id')
-
+docker build -t a2a-agent:latest .
+yc container registry create --name ${REGISTRY_NAME}
+REGISTRY_ID=$(yc container registry get --name ${REGISTRY_NAME} --format json | jq -r '.id')
 yc container registry configure-docker
-
-docker tag a2a-agent:latest cr.yandex/${REGISTRY\_ID}/a2a-agent:latest
-
-docker push cr.yandex/${REGISTRY\_ID}/a2a-agent:latest
-
-\# 3\. Настройка сервисного аккаунта и API-ключа
-
-yc iam service-account create \--name ${SA\_NAME}
-
-SA\_ID=$(yc iam service-account get ${SA\_NAME} \--format json | jq \-r '.id')
-
-\# Назначение ролей (одной командой)
-
-yc resourcemanager folder add-access-bindings ${FOLDER\_ID} \\
-
-  \--access-binding role=lockbox.payloadViewer,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=container-registry.images.puller,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=serverless.containers.invoker,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=serverless.mcpGateways.invoker,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=ai.assistants.editor,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=ai.languageModels.user,subject=serviceAccount:${SA\_ID}
-
-\# Создание API-ключа и секрета
-
-API\_KEY=$(yc iam api-key create \--service-account-id ${SA\_ID} \\
-
-  \--scope "yc.ai.languageModels.execute" \\
-
-  \--scope "yc.serverless.containers.invoke" \\
-
-  \--scope "yc.serverless.mcpGateways.invoke" \\
-
-  \--format json | jq \-r '.secret')
-
-yc lockbox secret create \--name a2a-api-key \--payload "\[{'key': 'API\_KEY', 'text\_value': '${API\_KEY}'}\]"
-
-SECRET\_ID=$(yc lockbox secret get a2a-api-key \--format json | jq \-r '.id')
-
-VERSION\_ID=$(yc lockbox secret get a2a-api-key \--format json | jq \-r '.current\_version.id')
-
-\# 4\. Получение URL MCP и Airline API
-
-MCP\_SERVER\_URL="https://your-airline-mcp-server-url.com"
-
-AIRLINE\_API\_URL="https://your-airline-api-url.com"
-
-\# 5\. Создание векторного хранилища (опционально)
-
-VECTOR\_STORE\_ID=""
-
-\# 6\. Деплой контейнера
-
-yc serverless container create \--name a2a-agent
-
-yc serverless container revision deploy \\
-
-  \--container-name a2a-agent \\
-
-  \--image cr.yandex/${REGISTRY\_ID}/a2a-agent:latest \\
-
-  \--service-account-id ${SA\_ID} \\
-
-  \--memory 1GB \--cores 1 \--execution-timeout 60s \--concurrency 4 \\
-
-  \--environment FOLDER\_ID=${FOLDER\_ID} \\
-
-  \--environment MCP\_SERVER\_URL=${MCP\_SERVER\_URL} \\
-
-  \--environment AIRLINE\_API\_URL=${AIRLINE\_API\_URL} \\
-
-  \--environment VECTOR\_STORE\_ID=${VECTOR\_STORE\_ID} \\
-
-  \--secret environment-variable=API\_KEY,id=${SECRET\_ID},version-id=${VERSION\_ID},key=API\_KEY
-
+docker tag a2a-agent:latest cr.yandex/${REGISTRY_ID}/a2a-agent:latest
+docker push cr.yandex/${REGISTRY_ID}/a2a-agent:latest
+# 3. Настройка сервисного аккаунта и API-ключа
+yc iam service-account create --name ${SA_NAME}
+SA_ID=$(yc iam service-account get ${SA_NAME} --format json | jq -r '.id')
+# Назначение ролей (одной командой)
+yc resourcemanager folder add-access-bindings ${FOLDER_ID} \
+  --access-binding role=lockbox.payloadViewer,subject=serviceAccount:${SA_ID} \
+  --access-binding role=container-registry.images.puller,subject=serviceAccount:${SA_ID} \
+  --access-binding role=serverless.containers.invoker,subject=serviceAccount:${SA_ID} \
+  --access-binding role=serverless.mcpGateways.invoker,subject=serviceAccount:${SA_ID} \
+  --access-binding role=ai.assistants.editor,subject=serviceAccount:${SA_ID} \
+  --access-binding role=ai.languageModels.user,subject=serviceAccount:${SA_ID}
+# Создание API-ключа и секрета
+API_KEY=$(yc iam api-key create --service-account-id ${SA_ID} \
+  --scope "yc.ai.languageModels.execute" \
+  --scope "yc.serverless.containers.invoke" \
+  --scope "yc.serverless.mcpGateways.invoke" \
+  --format json | jq -r '.secret')
+yc lockbox secret create --name a2a-api-key --payload "[{'key': 'API_KEY', 'text_value': '${API_KEY}'}]"
+SECRET_ID=$(yc lockbox secret get a2a-api-key --format json | jq -r '.id')
+VERSION_ID=$(yc lockbox secret get a2a-api-key --format json | jq -r '.current_version.id')
+# 4. Получение URL MCP и Airline API
+MCP_SERVER_URL="https://your-airline-mcp-server-url.com"
+AIRLINE_API_URL="https://your-airline-api-url.com"
+# 5. Создание векторного хранилища (опционально)
+VECTOR_STORE_ID=""
+# 6. Деплой контейнера
+yc serverless container create --name a2a-agent
+yc serverless container revision deploy \
+  --container-name a2a-agent \
+  --image cr.yandex/${REGISTRY_ID}/a2a-agent:latest \
+  --service-account-id ${SA_ID} \
+  --memory 1GB --cores 1 --execution-timeout 60s --concurrency 4 \
+  --environment FOLDER_ID=${FOLDER_ID} \
+  --environment MCP_SERVER_URL=${MCP_SERVER_URL} \
+  --environment AIRLINE_API_URL=${AIRLINE_API_URL} \
+  --environment VECTOR_STORE_ID=${VECTOR_STORE_ID} \
+  --secret environment-variable=API_KEY,id=${SECRET_ID},version-id=${VERSION_ID},key=API_KEY
 yc serverless container allow-unauthenticated-invoke a2a-agent
+# 7. Получение URL
+echo "A2A Agent URL: $(yc serverless container get a2a-agent --format json | jq -r '.url')"
+```
 
-\# 7\. Получение URL
-
-echo "A2A Agent URL: $(yc serverless container get a2a-agent \--format json | jq \-r '.url')"
 
 💡 Эта команда создает базовую конфигурацию. Смотрите ниже подробную инструкцию для полной настройки.
 
@@ -269,67 +179,52 @@ echo "A2A Agent URL: $(yc serverless container get a2a-agent \--format json | jq
 
 Соберите Docker-образ агента:
 
+```bash
 cd a2a-agent
+# Сборка образа
+docker build -t a2a-agent:latest .
+```
 
-\# Сборка образа
-
-docker build \-t a2a-agent:latest .
 
 ### Шаг 2: Создание Container Registry и загрузка образа
 
 Создайте реестр Container Registry и загрузите в него образ:
 
-\# Создание реестра
-
-yc container registry create \--name my-registry
-
-\# Получение ID реестра
-
-REGISTRY\_ID=$(yc container registry get \--name my-registry \--format json | jq \-r '.id')
-
-\# Авторизация в Container Registry
-
+```bash
+# Создание реестра
+yc container registry create --name my-registry
+# Получение ID реестра
+REGISTRY_ID=$(yc container registry get --name my-registry --format json | jq -r '.id')
+# Авторизация в Container Registry
 yc container registry configure-docker
+# Тегирование образа
+docker tag a2a-agent:latest cr.yandex/${REGISTRY_ID}/a2a-agent:latest
+# Загрузка образа
+docker push cr.yandex/${REGISTRY_ID}/a2a-agent:latest
+```
 
-\# Тегирование образа
-
-docker tag a2a-agent:latest cr.yandex/${REGISTRY\_ID}/a2a-agent:latest
-
-\# Загрузка образа
-
-docker push cr.yandex/${REGISTRY\_ID}/a2a-agent:latest
 
 ### Шаг 3: Создание сервисного аккаунта с ролями
 
 Создайте сервисный аккаунт и назначьте ему необходимые роли:
 
-\# Создание сервисного аккаунта
+```bash
+# Создание сервисного аккаунта
+yc iam service-account create --name a2a-agent-sa --description "Service account for A2A agent"
+# Получение ID сервисного аккаунта
+SA_ID=$(yc iam service-account get a2a-agent-sa --format json | jq -r '.id')
+# Получение ID каталога
+FOLDER_ID=$(yc config get folder-id)
+# Назначение ролей (одной командой)
+yc resourcemanager folder add-access-bindings ${FOLDER_ID} \
+  --access-binding role=lockbox.payloadViewer,subject=serviceAccount:${SA_ID} \
+  --access-binding role=container-registry.images.puller,subject=serviceAccount:${SA_ID} \
+  --access-binding role=serverless.containers.invoker,subject=serviceAccount:${SA_ID} \
+  --access-binding role=serverless.mcpGateways.invoker,subject=serviceAccount:${SA_ID} \
+  --access-binding role=ai.assistants.editor,subject=serviceAccount:${SA_ID} \
+  --access-binding role=ai.languageModels.user,subject=serviceAccount:${SA_ID}
+```
 
-yc iam service-account create \--name a2a-agent-sa \--description "Service account for A2A agent"
-
-\# Получение ID сервисного аккаунта
-
-SA\_ID=$(yc iam service-account get a2a-agent-sa \--format json | jq \-r '.id')
-
-\# Получение ID каталога
-
-FOLDER\_ID=$(yc config get folder-id)
-
-\# Назначение ролей (одной командой)
-
-yc resourcemanager folder add-access-bindings ${FOLDER\_ID} \\
-
-  \--access-binding role=lockbox.payloadViewer,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=container-registry.images.puller,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=serverless.containers.invoker,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=serverless.mcpGateways.invoker,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=ai.assistants.editor,subject=serviceAccount:${SA\_ID} \\
-
-  \--access-binding role=ai.languageModels.user,subject=serviceAccount:${SA\_ID}
 
 **Примечание**: A2A агент не требует роли `ydb.editor`, так как не использует YDB для хранения состояния.
 
@@ -337,23 +232,18 @@ yc resourcemanager folder add-access-bindings ${FOLDER\_ID} \\
 
 Создайте API-ключ для сервисного аккаунта с необходимыми правами:
 
-\# Создание API-ключа с правами и извлечение секрета
+```bash
+# Создание API-ключа с правами и извлечение секрета
+API_KEY=$(yc iam api-key create \
+  --service-account-id ${SA_ID} \
+  --description "API key for A2A agent" \
+  --scope "yc.ai.languageModels.execute" \
+  --scope "yc.serverless.containers.invoke" \
+  --scope "yc.serverless.mcpGateways.invoke" \
+  --format json | jq -r '.secret')
+echo "API Key: ${API_KEY}"
+```
 
-API\_KEY=$(yc iam api-key create \\
-
-  \--service-account-id ${SA\_ID} \\
-
-  \--description "API key for A2A agent" \\
-
-  \--scope "yc.ai.languageModels.execute" \\
-
-  \--scope "yc.serverless.containers.invoke" \\
-
-  \--scope "yc.serverless.mcpGateways.invoke" \\
-
-  \--format json | jq \-r '.secret')
-
-echo "API Key: ${API\_KEY}"
 
 💡 Сохраните `API_KEY` в безопасном месте. Он будет нужен для создания секрета Lockbox.
 
@@ -361,139 +251,88 @@ echo "API Key: ${API\_KEY}"
 
 Создайте секрет в Yandex Lockbox для хранения API-ключа:
 
-\# Создание секрета с API-ключом
+```bash
+# Создание секрета с API-ключом
+yc lockbox secret create \
+  --name a2a-api-key \
+  --description "API key for A2A agent" \
+  --payload "[{'key': 'API_KEY', 'text_value': '${API_KEY}'}]"
+# Получение ID секрета
+SECRET_ID=$(yc lockbox secret get a2a-api-key --format json | jq -r '.id')
+VERSION_ID=$(yc lockbox secret get a2a-api-key --format json | jq -r '.current_version.id')
+echo "Secret ID: ${SECRET_ID}"
+```
 
-yc lockbox secret create \\
-
-  \--name a2a-api-key \\
-
-  \--description "API key for A2A agent" \\
-
-  \--payload "\[{'key': 'API\_KEY', 'text\_value': '${API\_KEY}'}\]"
-
-\# Получение ID секрета
-
-SECRET\_ID=$(yc lockbox secret get a2a-api-key \--format json | jq \-r '.id')
-
-VERSION\_ID=$(yc lockbox secret get a2a-api-key \--format json | jq \-r '.current\_version.id')
-
-echo "Secret ID: ${SECRET\_ID}"
 
 ### Шаг 6: Создание Serverless Container и деплой
 
 Создайте публичный Serverless Container и разверните ревизию:
 
-\# Получение переменных из предыдущих шагов
-
-FOLDER\_ID=$(yc config get folder-id)
-
-REGISTRY\_ID=$(yc container registry get \--name my-registry \--format json | jq \-r '.id')
-
-SA\_ID=$(yc iam service-account get a2a-agent-sa \--format json | jq \-r '.id')
-
-SECRET\_ID=$(yc lockbox secret get a2a-api-key \--format json | jq \-r '.id')
-
-VERSION\_ID=$(yc lockbox secret get a2a-api-key \--format json | jq \-r '.current\_version.id')
-
-\# Получение URL MCP-сервера (должен быть развернут заранее)
-
-MCP\_SERVER\_URL=$(yc serverless container get airline-api \--format json | jq \-r '.url')
-
-\# Получение URL Airline API
-
-AIRLINE\_API\_URL=${MCP\_SERVER\_URL}
-
-\# Создание векторного хранилища (опционально)
-
-\# Если не используется File Search, оставьте VECTOR\_STORE\_ID пустым
-
-VECTOR\_STORE\_ID=""
-
-\# Создание контейнера
-
-yc serverless container create \--name a2a-agent
-
-\# Деплой ревизии контейнера
-
-yc serverless container revision deploy \\
-
-  \--container-name a2a-agent \\
-
-  \--image cr.yandex/${REGISTRY\_ID}/a2a-agent:latest \\
-
-  \--service-account-id ${SA\_ID} \\
-
-  \--memory 1GB \\
-
-  \--cores 1 \\
-
-  \--execution-timeout 60s \\
-
-  \--concurrency 4 \\
-
-  \--environment FOLDER\_ID=${FOLDER\_ID} \\
-
-  \--environment MCP\_SERVER\_URL=${MCP\_SERVER\_URL} \\
-
-  \--environment AIRLINE\_API\_URL=${AIRLINE\_API\_URL} \\
-
-  \--environment VECTOR\_STORE\_ID=${VECTOR\_STORE\_ID} \\
-
-  \--secret environment-variable=API\_KEY,id=${SECRET\_ID},version-id=${VERSION\_ID},key=API\_KEY
-
-\# Сделайте контейнер публичным
-
+```bash
+# Получение переменных из предыдущих шагов
+FOLDER_ID=$(yc config get folder-id)
+REGISTRY_ID=$(yc container registry get --name my-registry --format json | jq -r '.id')
+SA_ID=$(yc iam service-account get a2a-agent-sa --format json | jq -r '.id')
+SECRET_ID=$(yc lockbox secret get a2a-api-key --format json | jq -r '.id')
+VERSION_ID=$(yc lockbox secret get a2a-api-key --format json | jq -r '.current_version.id')
+# Получение URL MCP-сервера (должен быть развернут заранее)
+MCP_SERVER_URL=$(yc serverless container get airline-api --format json | jq -r '.url')
+# Получение URL Airline API
+AIRLINE_API_URL=${MCP_SERVER_URL}
+# Создание векторного хранилища (опционально)
+# Если не используется File Search, оставьте VECTOR_STORE_ID пустым
+VECTOR_STORE_ID=""
+# Создание контейнера
+yc serverless container create --name a2a-agent
+# Деплой ревизии контейнера
+yc serverless container revision deploy \
+  --container-name a2a-agent \
+  --image cr.yandex/${REGISTRY_ID}/a2a-agent:latest \
+  --service-account-id ${SA_ID} \
+  --memory 1GB \
+  --cores 1 \
+  --execution-timeout 60s \
+  --concurrency 4 \
+  --environment FOLDER_ID=${FOLDER_ID} \
+  --environment MCP_SERVER_URL=${MCP_SERVER_URL} \
+  --environment AIRLINE_API_URL=${AIRLINE_API_URL} \
+  --environment VECTOR_STORE_ID=${VECTOR_STORE_ID} \
+  --secret environment-variable=API_KEY,id=${SECRET_ID},version-id=${VERSION_ID},key=API_KEY
+# Сделайте контейнер публичным
 yc serverless container allow-unauthenticated-invoke a2a-agent
+# Получите URL контейнера
+CONTAINER_URL=$(yc serverless container get a2a-agent --format json | jq -r '.url')
+echo "A2A Agent URL: ${CONTAINER_URL}"
+```
 
-\# Получите URL контейнера
-
-CONTAINER\_URL=$(yc serverless container get a2a-agent \--format json | jq \-r '.url')
-
-echo "A2A Agent URL: ${CONTAINER\_URL}"
 
 ### Проверка развертывания
 
 Проверьте, что агент работает корректно:
 
-\# Получение Agent Card
-
-curl ${CONTAINER\_URL}/.well-known/ai-agent.json
-
-\# Создание задачи (A2A протокол)
-
-curl \-X POST ${CONTAINER\_URL}/tasks \\
-
-  \-H "Content-Type: application/json" \\
-
-  \-d '{
-
-    "input": \[
-
+```bash
+# Получение Agent Card
+curl ${CONTAINER_URL}/.well-known/ai-agent.json
+# Создание задачи (A2A протокол)
+curl -X POST ${CONTAINER_URL}/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": [
       {
-
         "role": "user",
-
-        "parts": \[
-
+        "parts": [
           {
-
             "text": "I need to change my seat on flight AA123"
-
           }
-
-        \]
-
+        ]
       }
-
-    \],
-
+    ],
     "context": {
-
-      "context\_id": "customer\_12345"
-
+      "context_id": "customer_12345"
     }
-
   }'
+```
+
 
 ## 📝 Переменные окружения
 
@@ -515,51 +354,32 @@ curl \-X POST ${CONTAINER\_URL}/tasks \\
 
 Агент предоставляет публичную карточку (Agent Card) по адресу `/.well-known/ai-agent.json`:
 
+```json
 {
-
   "name": "Customer Support Agent",
-
   "description": "Airline customer support agent for elite travelers",
-
   "url": "https://your-container-url.com",
-
   "version": "1.0.0",
-
-  "default\_input\_modes": \["text"\],
-
-  "default\_output\_modes": \["text"\],
-
+  "default_input_modes": ["text"],
+  "default_output_modes": ["text"],
   "capabilities": {},
-
-  "skills": \[
-
+  "skills": [
     {
-
-      "id": "customer\_support",
-
+      "id": "customer_support",
       "name": "Airline Customer Support",
-
       "description": "Airline customer support: seat changes, flight cancellations, baggage, and special requests",
-
-      "tags": \["customer support", "airline", "booking"\],
-
-      "examples": \[
-
+      "tags": ["customer support", "airline", "booking"],
+      "examples": [
         "I want to change my seat",
-
         "Help me cancel my flight",
-
         "I need additional assistance",
-
         "What is my loyalty status?"
-
-      \]
-
+      ]
     }
-
-  \]
-
+  ]
 }
+```
+
 
 ### Создание задачи
 
@@ -567,35 +387,24 @@ POST /tasks
 
 Content-Type: application/json
 
+```json
 {
-
-  "input": \[
-
+  "input": [
     {
-
       "role": "user",
-
-      "parts": \[
-
+      "parts": [
         {
-
           "text": "User message here"
-
         }
-
-      \]
-
+      ]
     }
-
-  \],
-
+  ],
   "context": {
-
-    "context\_id": "customer\_id"
-
+    "context_id": "customer_id"
   }
-
 }
+```
+
 
 ### Получение статуса задачи
 
@@ -605,7 +414,10 @@ GET /tasks/{task\_id}
 
 A2A-протокол позволяет агентам взаимодействовать друг с другом:
 
+```tsx
 import httpx
+```
+
 
 async def call\_support\_agent(customer\_id: str, message: str):
 
@@ -617,25 +429,19 @@ async def call\_support\_agent(customer\_id: str, message: str):
 
             json={
 
-                "input": \[
-
+```bash
+                "input": [
                     {
-
                         "role": "user",
-
-                        "parts": \[{"text": message}\]
-
+                        "parts": [{"text": message}]
                     }
-
-                \],
-
-                "context": {"context\_id": customer\_id}
-
+                ],
+                "context": {"context_id": customer_id}
             }
-
         )
-
         return response.json()
+```
+
 
 ## 🆚 Сравнение с ChatKit Agent
 
@@ -654,57 +460,45 @@ async def call\_support\_agent(customer\_id: str, message: str):
 
 Создайте файл `.env`:
 
-FOLDER\_ID=your-folder-id
-
-API\_KEY=your-api-key
-
-MCP\_SERVER\_URL=http://localhost:8001
-
-AIRLINE\_API\_URL=http://localhost:8001
-
-VECTOR\_STORE\_ID=
-
+```bash
+FOLDER_ID=your-folder-id
+API_KEY=your-api-key
+MCP_SERVER_URL=http://localhost:8001
+AIRLINE_API_URL=http://localhost:8001
+VECTOR_STORE_ID=
 PORT=9999
+```
+
 
 ### Локальный запуск
 
-\# Установка зависимостей
-
+```bash
+# Установка зависимостей
 uv sync
+# Запуск сервера
+uv run python -m app
+```
 
-\# Запуск сервера
-
-uv run python \-m app
 
 ### Тестирование
 
-\# Получение Agent Card
-
+```bash
+# Получение Agent Card
 curl http://localhost:9999/.well-known/ai-agent.json
-
-\# Создание задачи
-
-curl \-X POST http://localhost:9999/tasks \\
-
-  \-H "Content-Type: application/json" \\
-
-  \-d '{
-
-    "input": \[
-
+# Создание задачи
+curl -X POST http://localhost:9999/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": [
       {
-
         "role": "user",
-
-        "parts": \[{"text": "Hello, I need help"}\]
-
+        "parts": [{"text": "Hello, I need help"}]
       }
-
-    \],
-
-    "context": {"context\_id": "test\_customer"}
-
+    ],
+    "context": {"context_id": "test_customer"}
   }'
+```
+
 
 ## 📚 Полезные ссылки
 
@@ -738,4 +532,3 @@ curl \-X POST http://localhost:9999/tasks \\
 2. Убедитесь, что все переменные окружения заданы правильно  
 3. Проверьте доступность MCP-сервера и Airline API  
 4. Убедитесь, что сервисный аккаунт имеет все необходимые роли
-

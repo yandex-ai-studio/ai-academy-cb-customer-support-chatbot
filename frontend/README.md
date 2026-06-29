@@ -49,91 +49,52 @@ Customer Support Frontend — это React-приложение, предост�
 
 ## 🏗️ Архитектура
 
+```text
 ┌────────────────────────────────────────────────────────────┐
-
 │                       Browser                              │
-
 │  ┌───────────────────────────────────────────────────────┐ │
-
 │  │                App.tsx (Main)                         │ │
-
-│  │  \- useColorScheme() для управления темой              │ │
-
+│  │  - useColorScheme() для управления темой              │ │
 │  └─────────────────┬─────────────────────────────────────┘ │
-
 │                    │                                       │
-
 │  ┌─────────────────▼─────────────────────────────────────┐ │
-
 │  │           Home.tsx (Layout)                           │ │
-
-│  │  \- Общий макет приложения                             │ │
-
-│  │  \- Управление состоянием thread                       │ │
-
+│  │  - Общий макет приложения                             │ │
+│  │  - Управление состоянием thread                       │ │
 │  └──────┬──────────────────────────────┬─────────────────┘ │
-
 │         │                              │                   │
-
 │  ┌──────▼──────────────┐      ┌────────▼────────────────┐  │
-
 │  │  ChatKitPanel.tsx   │      │ CustomerContextPanel    │  │
-
 │  │  ┌──────────────┐   │      │        .tsx             │  │
-
 │  │  │   ChatKit    │   │      │  ┌──────────────────┐   │  │
-
 │  │  │  Component   │   │      │  │ Profile Header   │   │  │
-
 │  │  └──────────────┘   │      │  │ Flight Segments  │   │  │
-
-│  │  \- useChatKit()     │      │  │ Bags/Meal/Help   │   │  │
-
-│  │  \- Theme config     │      │  │ Timeline         │   │  │
-
-│  │  \- Event handlers   │      │  │ Tier Benefits    │   │  │
-
+│  │  - useChatKit()     │      │  │ Bags/Meal/Help   │   │  │
+│  │  - Theme config     │      │  │ Timeline         │   │  │
+│  │  - Event handlers   │      │  │ Tier Benefits    │   │  │
 │  └──────┬──────────────┘      │  └──────────────────┘   │  │
-
-│         │                     │  \- useCustomerContext() │  │
-
+│         │                     │  - useCustomerContext() │  │
 │         │                     └────────┬────────────────┘  │
-
 │         │                              │                   │
-
 └─────────┼──────────────────────────────┼───────────────────┘
-
           │                              │
-
           │ POST /support/chatkit        │ GET /support/profile/{id}
-
           ▼                              ▼
-
 ┌─────────────────────────────────────────────────────────────┐
-
 │              Vite Dev Server (localhost:5171)                │
-
-│                      Proxy: /support/\*                       │
-
+│                      Proxy: /support/*                       │
 │                            ↓                                 │
-
-│              Backend: http://localhost:8000/support/\*        │
-
+│              Backend: http://localhost:8000/support/*        │
 └─────────────────────────────────────────────────────────────┘
-
           │                              │
-
           ▼                              ▼
-
 ┌─────────────────────┐     ┌───────────────────────┐
-
 │  ChatKit Agent      │     │   Airline API         │
-
-│  (port 8000\)        │     │   (через proxy)       │
-
-│  \- POST /chatkit    │     │   \- GET /profile/{id} │
-
+│  (port 8000)        │     │   (через proxy)       │
+│  - POST /chatkit    │     │   - GET /profile/{id} │
 └─────────────────────┘     └───────────────────────┘
+```
+
 
 ### Основные компоненты
 
@@ -189,141 +150,99 @@ Customer Support Frontend — это React-приложение, предост�
 
 ### Установка и запуск
 
-\# 1\. Перейдите в директорию frontend
-
+```bash
+# 1. Перейдите в директорию frontend
 cd frontend
-
-\# 2\. Установите зависимости
-
+# 2. Установите зависимости
 npm install
-
-\# 3\. Запустите dev-сервер
-
+# 3. Запустите dev-сервер
 npm run dev
+# Приложение будет доступно по адресу http://localhost:5171
+```
 
-\# Приложение будет доступно по адресу http://localhost:5171
 
 ## 🛠️ Разработка
 
 ### Доступные скрипты
 
-\# Запуск dev-сервера с hot reload
-
+```bash
+# Запуск dev-сервера с hot reload
 npm run dev
-
-\# Сборка продакшен-версии
-
+# Сборка продакшен-версии
 npm run build
-
-\# Предварительный просмотр продакшен-сборки
-
+# Предварительный просмотр продакшен-сборки
 npm run preview
-
-\# Линтинг кода
-
+# Линтинг кода
 npm run lint
+```
+
 
 ### Структура проекта
 
+```text
 frontend/
-
 ├── src/
-
-│   ├── components/           \# React-компоненты
-
-│   │   ├── ChatKitPanel.tsx  \# Панель чата
-
-│   │   ├── CustomerContextPanel.tsx  \# Контекст клиента
-
-│   │   ├── Home.tsx          \# Главный layout
-
-│   │   └── ThemeToggle.tsx   \# Переключатель темы
-
-│   ├── hooks/                \# Пользовательские хуки
-
-│   │   ├── useColorScheme.ts \# Управление темой
-
-│   │   └── useCustomerContext.ts \# Загрузка профилей
-
+│   ├── components/           # React-компоненты
+│   │   ├── ChatKitPanel.tsx  # Панель чата
+│   │   ├── CustomerContextPanel.tsx  # Контекст клиента
+│   │   ├── Home.tsx          # Главный layout
+│   │   └── ThemeToggle.tsx   # Переключатель темы
+│   ├── hooks/                # Пользовательские хуки
+│   │   ├── useColorScheme.ts # Управление темой
+│   │   └── useCustomerContext.ts # Загрузка профилей
 │   ├── lib/
+│   │   └── config.ts         # Конфигурация приложения
+│   ├── App.tsx               # Корневой компонент
+│   ├── main.tsx              # Точка входа
+│   └── index.css             # Глобальные стили
+├── public/                   # Статические файлы
+├── index.html                # HTML-шаблон
+├── vite.config.ts            # Конфигурация Vite
+├── tailwind.config.ts        # Конфигурация Tailwind
+├── tsconfig.json             # Конфигурация TypeScript
+└── package.json              # Зависимости
+```
 
-│   │   └── config.ts         \# Конфигурация приложения
-
-│   ├── App.tsx               \# Корневой компонент
-
-│   ├── main.tsx              \# Точка входа
-
-│   └── index.css             \# Глобальные стили
-
-├── public/                   \# Статические файлы
-
-├── index.html                \# HTML-шаблон
-
-├── vite.config.ts            \# Конфигурация Vite
-
-├── tailwind.config.ts        \# Конфигурация Tailwind
-
-├── tsconfig.json             \# Конфигурация TypeScript
-
-└── package.json              \# Зависимости
 
 ### Стилизация
 
 Приложение использует **Tailwind CSS** с кастомными утилитами:
 
+```tsx
 // Примеры использования
-
-\<div className="rounded-3xl bg-white/80 shadow-\[0\_45px\_90px\_-45px\_rgba(15,23,42,0.6)\] backdrop-blur"\>
-
+<div className="rounded-3xl bg-white/80 shadow-[0_45px_90px_-45px_rgba(15,23,42,0.6)] backdrop-blur">
   // Glassmorphism эффект
-
-\</div\>
-
-\<div className="dark:bg-slate-900 dark:text-slate-100"\>
-
+</div>
+<div className="dark:bg-slate-900 dark:text-slate-100">
   // Поддержка темной темы
+</div>
+```
 
-\</div\>
 
 ### Добавление новых компонентов
 
+```tsx
 // src/components/MyComponent.tsx
-
 import { useState } from "react";
-
-type MyComponentProps \= {
-
+type MyComponentProps = {
   title: string;
-
 };
-
 export function MyComponent({ title }: MyComponentProps) {
-
-  const \[count, setCount\] \= useState(0);
-
+  const [count, setCount] = useState(0);
   return (
-
-    \<div className="rounded-xl bg-white p-4 dark:bg-slate-900"\>
-
-      \<h3 className="text-lg font-semibold"\>{title}\</h3\>
-
-      \<button
-
-        onClick={() \=\> setCount(count \+ 1)}
-
+    <div className="rounded-xl bg-white p-4 dark:bg-slate-900">
+      <h3 className="text-lg font-semibold">{title}</h3>
+      <button
+        onClick={() => setCount(count + 1)}
         className="mt-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-
-      \>
-
+      >
         Count: {count}
-
-      \</button\>
-
-    \</div\>
-
+      </button>
+    </div>
   );
-
 }
+```
+
 
 ## ⚙️ Конфигурация
 
@@ -331,47 +250,36 @@ export function MyComponent({ title }: MyComponentProps) {
 
 Создайте файл `.env.local` в корне фронтенд-директории:
 
-\# Backend API (chatkit-agent)
+```bash
+# Backend API (chatkit-agent)
+VITE_SUPPORT_API_BASE=http://localhost:8000/support
+# ChatKit Domain Key (для production)
+VITE_SUPPORT_CHATKIT_API_DOMAIN_KEY=domain_pk_your_key
+# Кастомное приветствие (опционально)
+VITE_SUPPORT_GREETING="Welcome to Airline Support!"
+# URL для получения профилей из Airline API (если отличается)
+VITE_SUPPORT_CUSTOMER_URL=http://localhost:8000/support/profile
+```
 
-VITE\_SUPPORT\_API\_BASE=http://localhost:8000/support
-
-\# ChatKit Domain Key (для production)
-
-VITE\_SUPPORT\_CHATKIT\_API\_DOMAIN\_KEY=domain\_pk\_your\_key
-
-\# Кастомное приветствие (опционально)
-
-VITE\_SUPPORT\_GREETING="Welcome to Airline Support\!"
-
-\# URL для получения профилей из Airline API (если отличается)
-
-VITE\_SUPPORT\_CUSTOMER\_URL=http://localhost:8000/support/profile
 
 ### Vite-конфигурация
 
 **vite.config.ts** настроен для проксирования запросов:
 
+```tsx
 export default defineConfig({
-
   server: {
-
     port: 5171,
-
     proxy: {
-
       "/support": {
-
         target: "http://127.0.0.1:8000",
-
         changeOrigin: true,
-
       },
-
     },
-
   },
-
 });
+```
+
 
 Это позволяет избежать проблем с CORS в разработке.
 
@@ -379,21 +287,17 @@ export default defineConfig({
 
 **tailwind.config.ts** настроен для темной темы:
 
+```tsx
 export default {
-
   darkMode: "class", // Управление через класс
-
-  content: \[
-
+  content: [
     "./index.html",
-
-    "./src/\*\*/\*.{js,ts,jsx,tsx}",
-
-  \],
-
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
   // ... остальная конфигурация
-
 }
+```
+
 
 ## 🎨 Компоненты
 
@@ -401,23 +305,18 @@ export default {
 
 Компонент интеграции OpenAI ChatKit:
 
-\<ChatKitPanel
-
+```tsx
+<ChatKitPanel
   theme={scheme} // "dark" | "light"
-
-  onThreadChange={(threadId) \=\> {
-
+  onThreadChange={(threadId) => {
     // Вызывается при смене чата
-
   }}
-
-  onResponseCompleted={() \=\> {
-
+  onResponseCompleted={() => {
     // Вызывается после завершения ответа
-
   }}
+/>
+```
 
-/\>
 
 **Особенности:**
 
@@ -430,15 +329,14 @@ export default {
 
 Панель отображения профиля клиента:
 
-\<CustomerContextPanel
-
+```tsx
+<CustomerContextPanel
   profile={profile} // CustomerProfile | null
-
   loading={loading} // boolean
-
   error={error}     // string | null
+/>
+```
 
-/\>
 
 **Отображаемая информация:**
 
@@ -453,37 +351,36 @@ export default {
 
 Переключатель темной/светлой темы:
 
-\<ThemeToggle
-
+```tsx
+<ThemeToggle
   value={scheme}           // "dark" | "light"
+  onChange={setScheme}     // (scheme: ColorScheme) => void
+/>
+```
 
-  onChange={setScheme}     // (scheme: ColorScheme) \=\> void
-
-/\>
 
 ### Пользовательские хуки
 
 #### useColorScheme
 
-const { scheme, setScheme } \= useColorScheme();
-
+```tsx
+const { scheme, setScheme } = useColorScheme();
 // scheme: "dark" | "light"
-
-// setScheme: (scheme: ColorScheme) \=\> void
-
+// setScheme: (scheme: ColorScheme) => void
 // Автоматически сохраняет в localStorage
+```
+
 
 #### useCustomerContext
 
-const { profile, loading, error, refresh } \= useCustomerContext(threadId);
-
+```tsx
+const { profile, loading, error, refresh } = useCustomerContext(threadId);
 // profile: CustomerProfile | null
-
 // loading: boolean
-
 // error: string | null
+// refresh: () => Promise<void>
+```
 
-// refresh: () \=\> Promise\<void\>
 
 ## 🚀 Развертывание
 
@@ -494,40 +391,30 @@ const { profile, loading, error, refresh } \= useCustomerContext(threadId);
 #### Предварительные требования
 
 - Установленный [Yandex Cloud CLI](https://cloud.yandex.ru/docs/cli/quickstart)  
-- Развернутый chatkit-agent в Yandex Cloud Serverless Containers (см. [../chatkit-agent/README.md](http://../chatkit-agent/README.md))  
+- Развернутый chatkit-agent в Yandex Cloud Serverless Containers (см. [../chatkit-agent/README.md](../chatkit-agent/README.md))  
 - Node.js 18+ и npm
 
 #### Шаг 1: Создание бакета в Object Storage
 
 Создайте бакет для хостинга статических файлов:
 
-\# Создайте бакет с уникальным именем
-
-BUCKET\_NAME="customer-support-frontend"
-
-yc storage bucket create \--name ${BUCKET\_NAME}
-
-\# Настройте публичный доступ для чтения
-
-yc storage bucket update \--name ${BUCKET\_NAME} \--public-read
-
-\# Настройте веб\-хостинг
-
-yc storage bucket update \--name ${BUCKET\_NAME} \\
-
-  \--website-settings '{
-
+```bash
+# Создайте бакет с уникальным именем
+BUCKET_NAME="customer-support-frontend"
+yc storage bucket create --name ${BUCKET_NAME}
+# Настройте публичный доступ для чтения
+yc storage bucket update --name ${BUCKET_NAME} --public-read
+# Настройте веб-хостинг
+yc storage bucket update --name ${BUCKET_NAME} \
+  --website-settings '{
     "index": "index.html",
-
     "error": "index.html"
-
   }'
+# Получите URL бакета
+BUCKET_URL="${BUCKET_NAME}.website.yandexcloud.net"
+echo "Frontend URL: https://${BUCKET_URL}"
+```
 
-\# Получите URL бакета
-
-BUCKET\_URL="${BUCKET\_NAME}.website.yandexcloud.net"
-
-echo "Frontend URL: https://${BUCKET\_URL}"
 
 💡 Для собственного домена настройте CNAME-запись в DNS, указывающую на `${BUCKET_NAME}.website.yandexcloud.net`.
 
@@ -546,53 +433,45 @@ echo "Frontend URL: https://${BUCKET\_URL}"
 
 Создайте `.env.production` с продакшен-настройками:
 
-\# В директории frontend/
-
-cat \> .env.production \<\< EOF
-
-\# URL развернутого chatkit-agent в Yandex Cloud
-
-VITE\_SUPPORT\_API\_BASE=https://your-chatkit-agent-id.containers.yandexcloud.net/support
-
-\# Domain Key из OpenAI Platform
-
-VITE\_SUPPORT\_CHATKIT\_API\_DOMAIN\_KEY=domain\_pk\_your\_production\_key
-
-\# URL для получения профилей (через chatkit-agent)
-
-VITE\_SUPPORT\_CUSTOMER\_URL=https://your-chatkit-agent-id.containers.yandexcloud.net/support/profile
-
-\# Опционально: кастомное приветствие
-
-VITE\_SUPPORT\_GREETING="Thanks for reaching our airline concierge. How can I make your trip smoother today?"
-
+```bash
+# В директории frontend/
+cat > .env.production << EOF
+# URL развернутого chatkit-agent в Yandex Cloud
+VITE_SUPPORT_API_BASE=https://your-chatkit-agent-id.containers.yandexcloud.net/support
+# Domain Key из OpenAI Platform
+VITE_SUPPORT_CHATKIT_API_DOMAIN_KEY=domain_pk_your_production_key
+# URL для получения профилей (через chatkit-agent)
+VITE_SUPPORT_CUSTOMER_URL=https://your-chatkit-agent-id.containers.yandexcloud.net/support/profile
+# Опционально: кастомное приветствие
+VITE_SUPPORT_GREETING="Thanks for reaching our airline concierge. How can I make your trip smoother today?"
 EOF
+```
+
 
 💡 Замените `your-chatkit-agent-id.containers.yandexcloud.net` на реальный URL вашего chatkit-agent контейнера.
 
 Получить URL chatkit-agent:
 
-yc serverless container get chatkit-agent \--format json | jq \-r '.url'
+```bash
+yc serverless container get chatkit-agent --format json | jq -r '.url'
+```
+
 
 #### Шаг 4: Сборка проекта
 
 Соберите продакшен-версию:
 
-\# Убедитесь, что вы в директории frontend/
-
+```bash
+# Убедитесь, что вы в директории frontend/
 cd frontend
-
-\# Установите зависимости
-
+# Установите зависимости
 npm install
-
-\# Соберите продакшен-версию
-
+# Соберите продакшен-версию
 npm run build
+# Проверьте результат
+ls -la dist/
+```
 
-\# Проверьте результат
-
-ls \-la dist/
 
 Продакшен-сборка включает:
 
@@ -605,79 +484,53 @@ ls \-la dist/
 
 **Вариант 1: Через AWS CLI (рекомендуется)**
 
-\# Установите AWS CLI
+```bash
+# Установите AWS CLI
+# macOS: brew install awscli
+# Ubuntu: sudo apt install awscli
+# Настройте credentials для Yandex Cloud
+aws configure set aws_access_key_id <your_access_key_id>
+aws configure set aws_secret_access_key <your_secret_key>
+# Загрузите все файлы рекурсивно
+aws s3 sync dist/ s3://${BUCKET_NAME}/ \
+  --endpoint-url=https://storage.yandexcloud.net \
+  --acl public-read
+```
 
-\# macOS: brew install awscli
-
-\# Ubuntu: sudo apt install awscli
-
-\# Настройте credentials для Yandex Cloud
-
-aws configure set aws\_access\_key\_id \<your\_access\_key\_id\>
-
-aws configure set aws\_secret\_access\_key \<your\_secret\_key\>
-
-\# Загрузите все файлы рекурсивно
-
-aws s3 sync dist/ s3://${BUCKET\_NAME}/ \\
-
-  \--endpoint-url=https://storage.yandexcloud.net \\
-
-  \--acl public-read
 
 **Вариант 2: Через Yandex Cloud CLI**
 
-\# Скрипт для загрузки всех файлов с правильными Content-Type
-
+```bash
+# Скрипт для загрузки всех файлов с правильными Content-Type
 cd dist
+find . -type f | while read file; do
+  key="${file#./}"
 
-find . \-type f | while read file; do
 
-  key="${file\#./}"
-
-  
-
-  \# Определение Content-Type
-
+  # Определение Content-Type
   case "$file" in
-
-    \*.html) content\_type="text/html" ;;
-
-    \*.css) content\_type="text/css" ;;
-
-    \*.js) content\_type="application/javascript" ;;
-
-    \*.json) content\_type="application/json" ;;
-
-    \*.png) content\_type="image/png" ;;
-
-    \*.jpg|\*.jpeg) content\_type="image/jpeg" ;;
-
-    \*.svg) content\_type="image/svg+xml" ;;
-
-    \*.ico) content\_type="image/x-icon" ;;
-
-    \*) content\_type="application/octet-stream" ;;
-
+    *.html) content_type="text/html" ;;
+    *.css) content_type="text/css" ;;
+    *.js) content_type="application/javascript" ;;
+    *.json) content_type="application/json" ;;
+    *.png) content_type="image/png" ;;
+    *.jpg|*.jpeg) content_type="image/jpeg" ;;
+    *.svg) content_type="image/svg+xml" ;;
+    *.ico) content_type="image/x-icon" ;;
+    *) content_type="application/octet-stream" ;;
   esac
 
-  
 
-  yc storage s3api put-object \\
-
-    \--bucket ${BUCKET\_NAME} \\
-
-    \--key "$key" \\
-
-    \--body "$file" \\
-
-    \--content-type "$content\_type" \\
-
-    \--acl public-read
-
+  yc storage s3api put-object \
+    --bucket ${BUCKET_NAME} \
+    --key "$key" \
+    --body "$file" \
+    --content-type "$content_type" \
+    --acl public-read
 done
-
 cd ..
+```
+
 
 **Вариант 3: Через веб\-консоль**
 
@@ -689,13 +542,13 @@ cd ..
 
 После загрузки проверьте работу:
 
-\# Откройте в браузере
+```bash
+# Откройте в браузере
+echo "Frontend: https://${BUCKET_URL}"
+# Проверьте доступность
+curl -I https://${BUCKET_URL}
+```
 
-echo "Frontend: https://${BUCKET\_URL}"
-
-\# Проверьте доступность
-
-curl \-I https://${BUCKET\_URL}
 
 **Чеклист проверки:**
 
@@ -710,47 +563,36 @@ curl \-I https://${BUCKET\_URL}
 
 Для обновления после изменений:
 
-\# 1\. Внесите изменения в код
-
-\# 2\. Пересоберите
-
+```bash
+# 1. Внесите изменения в код
+# 2. Пересоберите
 npm run build
+# 3. Загрузите обновленные файлы
+aws s3 sync dist/ s3://${BUCKET_NAME}/ \
+  --endpoint-url=https://storage.yandexcloud.net \
+  --acl public-read \
+  --delete  # Удалит старые файлы
+# 4. Очистите кеш браузера (Ctrl+Shift+R / Cmd+Shift+R)
+```
 
-\# 3\. Загрузите обновленные файлы
-
-aws s3 sync dist/ s3://${BUCKET\_NAME}/ \\
-
-  \--endpoint-url=https://storage.yandexcloud.net \\
-
-  \--acl public-read \\
-
-  \--delete  \# Удалит старые файлы
-
-\# 4\. Очистите кеш браузера (Ctrl+Shift+R / Cmd+Shift+R)
 
 #### Настройка CORS (если требуется)
 
 Если chatkit-agent на другом домене, настройте CORS:
 
-yc storage bucket update \--name ${BUCKET\_NAME} \\
-
-  \--cors '\[
-
+```bash
+yc storage bucket update --name ${BUCKET_NAME} \
+  --cors '[
     {
-
       "id": "allow-chatkit",
-
-      "allowed\_methods": \["GET", "POST", "PUT", "DELETE", "HEAD"\],
-
-      "allowed\_origins": \["https://your-chatkit-agent-id.containers.yandexcloud.net"\],
-
-      "allowed\_headers": \["\*"\],
-
-      "max\_age\_seconds": 3600
-
+      "allowed_methods": ["GET", "POST", "PUT", "DELETE", "HEAD"],
+      "allowed_origins": ["https://your-chatkit-agent-id.containers.yandexcloud.net"],
+      "allowed_headers": ["*"],
+      "max_age_seconds": 3600
     }
+  ]'
+```
 
-  \]'
 
 ## 📝 Переменные окружения
 
@@ -776,9 +618,11 @@ yc storage bucket update \--name ${BUCKET\_NAME} \\
 3. Проверьте консоль браузера на наличие CORS-ошибок  
 4. Убедитесь, что domain key валиден (для production)
 
-\# Проверка доступности бэкенда
-
+```bash
+# Проверка доступности бэкенда
 curl http://localhost:8000/support/chatkit
+```
+
 
 ### Профиль клиента не загружается
 
@@ -790,9 +634,11 @@ curl http://localhost:8000/support/chatkit
 2. Убедитесь, что эндпоинт `/support/profile/{id}` доступен  
 3. Проверьте CORS-настройки в chatkit-agent
 
-\# Проверка эндпоинта
+```bash
+# Проверка эндпоинта
+curl http://localhost:8000/support/profile/demo_default_thread
+```
 
-curl http://localhost:8000/support/profile/demo\_default\_thread
 
 ### CORS-ошибки в продакшене
 
@@ -803,17 +649,15 @@ curl http://localhost:8000/support/profile/demo\_default\_thread
 1. Убедитесь, что фронтенд и бэкенд на одном домене  
 2. Или настройте CORS в chatkit-agent:
 
-app.add\_middleware(
-
+```python
+app.add_middleware(
     CORSMiddleware,
-
-    allow\_origins=\["https://your-frontend-domain.com"\],
-
-    allow\_methods=\["\*"\],
-
-    allow\_headers=\["\*"\],
-
+    allow_origins=["https://your-frontend-domain.com"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+```
+
 
 ### Стили не применяются
 
@@ -825,11 +669,12 @@ app.add\_middleware(
 2. Убедитесь, что PostCSS настроен правильно  
 3. Перезапустите dev-сервер
 
-\# Очистка кеша и перезапуск
-
-rm \-rf node\_modules/.vite
-
+```bash
+# Очистка кеша и перезапуск
+rm -rf node_modules/.vite
 npm run dev
+```
+
 
 ### Theme не сохраняется
 
@@ -841,9 +686,11 @@ npm run dev
 2. Убедитесь, что `THEME_STORAGE_KEY` уникален  
 3. Проверьте консоль на ошибки
 
+```tsx
 // В консоли браузера
-
 localStorage.getItem('customer-support-theme')
+```
+
 
 ## 📊 Производительность
 
@@ -859,57 +706,56 @@ localStorage.getItem('customer-support-theme')
 
 1. **Lazy loading компонентов:**
 
-const CustomerContextPanel \= lazy(() \=\> 
-
+```tsx
+const CustomerContextPanel = lazy(() =>
   import('./components/CustomerContextPanel')
-
 );
+```
+
 
 2. **Мemoization:**
 
-const MemoizedPanel \= memo(CustomerContextPanel);
+```tsx
+const MemoizedPanel = memo(CustomerContextPanel);
+```
+
 
 3. **Виртуализация длинных списков:**
 
+```tsx
 // Для больших timeline списков
-
 import { VirtualList } from 'react-window';
+```
+
 
 ## 🧪 Тестирование
 
 ### Запуск тестов
 
-\# Запуск Vitest
-
+```bash
+# Запуск Vitest
 npm run test
-
-\# С coverage
-
+# С coverage
 npm run test:coverage
-
-\# Watch mode
-
+# Watch mode
 npm run test:watch
+```
+
 
 ### Пример теста
 
+```tsx
 import { render, screen } from '@testing-library/react';
-
 import { describe, it, expect } from 'vitest';
-
 import { ThemeToggle } from './ThemeToggle';
-
-describe('ThemeToggle', () \=\> {
-
-  it('renders theme toggle button', () \=\> {
-
-    render(\<ThemeToggle value="light" onChange={() \=\> {}} /\>);
-
+describe('ThemeToggle', () => {
+  it('renders theme toggle button', () => {
+    render(<ThemeToggle value="light" onChange={() => {}} />);
     expect(screen.getByRole('button')).toBeInTheDocument();
-
   });
-
 });
+```
+
 
 ## 📚 Полезные ссылки
 
@@ -944,4 +790,4 @@ describe('ThemeToggle', () \=\> {
 
 ---
 
-💡 Используйте React DevTools для отладки состояния компонентов и Chrome DevTools Network tab для анализа API-запросов.  
+💡 Используйте React DevTools для отладки состояния компонентов и Chrome DevTools Network tab для анализа API-запросов.

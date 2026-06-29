@@ -24,71 +24,44 @@ Customer Support ChatBot — это демонстрационное прило�
 
 Проект состоит из четырех независимых микросервисов:
 
+```text
 ┌──────────────────────────┐              ┌─────────────────────────────┐
-
 │  Browser (Пользователь)  │              │  Внешний агент / Сервис     │
-
 │  ┌────────────────────┐  │              │  (например, другой AI)      │
-
 │  │ Frontend (React)   │  │              └──────────────┬──────────────┘
-
-│  │ \+ OpenAI ChatKit   │  │                             │
-
+│  │ + OpenAI ChatKit   │  │                             │
 │  └────┬───────────┬───┘  │                             │ A2A Protocol
-
 └───────┼───────────┼──────┘                             │ (HTTPS)
-
         │ HTTPS     │                                    │
-
         │           │ HTTPS (профили)                    │
-
         ▼           │                                    ▼
-
 ┌────────────────┐  │                         ┌──────────────────┐
-
 │ ChatKit Agent  │  │                         │   A2A Agent      │
-
 ├────────────────┤  │                         ├──────────────────┤
-
 │• ChatKit Server│  │                         │ • A2A Server     │
-
 │• AI Agent      │  │                         │ • AI Agent       │
-
 │• YDB Store     │  │                         │ • Task Store     │
-
 │• MCP Client    │  │                         │ • MCP Client     │
-
 └────────┬───────┘  │                         └────────┬─────────┘
-
          │          │                                  │
-
          │          │                                  │
-
          └──────────┼──────────┬───────────────────────┘
-
                     ▼          │
-
         ┌────────────────────┐ │       ┌────────────────────────┐
-
         │   Airline API      │◄┘       │  Yandex AI Studio      │
-
         │                    │◄────────│                        │
-
         ├────────────────────┤  MCP    ├────────────────────────┤
-
         │ • REST API         │         │ • YandexGPT            │
-
         │ • Profile CRUD     │         │ • Response API         │
-
         │ • YDB Store        │         │ • Vector Store API     │
-
         │ • MCP Server       │         │ • MCP Hub              │
-
         └────────────────────┘         └────────────────────────┘
+```
+
 
 ## 📦 Компоненты проекта
 
-### 1\. [Frontend](http://./frontend/) — React \+ ChatKit UI
+### 1\. [Frontend](./frontend/) — React \+ ChatKit UI
 
 Современный веб\-интерфейс для чатов с AI-агентами.
 
@@ -103,11 +76,11 @@ Customer Support ChatBot — это демонстрационное прило�
 
 **Развертывание:** Yandex Cloud Object Storage (веб-хостинг)
 
-📖 [**Подробная документация →**](http://./frontend/README.md)
+📖 [**Подробная документация →**](./frontend/README.md)
 
 ---
 
-### 2\. [ChatKit Agent](http://./chatkit-agent/) \- AI-агент c ChatKit-сервером
+### 2\. [ChatKit Agent](./chatkit-agent/) \- AI-агент c ChatKit-сервером
 
 FastAPI сервер с реализацией ChatKit-бэкенда c AI-агентом на базе Yandex AI Studio.
 
@@ -123,11 +96,11 @@ FastAPI сервер с реализацией ChatKit-бэкенда c AI-аг�
 
 **Развертывание:** Yandex Cloud Serverless Containers
 
-📖 [**Подробная документация →**](http://./chatkit-agent/README.md)
+📖 [**Подробная документация →**](./chatkit-agent/README.md)
 
 ---
 
-### 4\. [A2A Agent](http://./a2a-agent/) — AI-агент с поддержкой протокола Agent-to-Agent
+### 4\. [A2A Agent](./a2a-agent/) — AI-агент с поддержкой протокола Agent-to-Agent
 
 Реализация AI-агента с поддержкой протокола Agent-to-Agent (A2A) для вызова другими агентами.
 
@@ -142,11 +115,11 @@ FastAPI сервер с реализацией ChatKit-бэкенда c AI-аг�
 
 **Развертывание:** Yandex Cloud Serverless Containers
 
-📖 [**Подробная документация →**](http://./a2a-agent/README.md)
+📖 [**Подробная документация →**](./a2a-agent/README.md)
 
 ---
 
-### 3\. [Airline API](http://./airline-api/) — REST API для работы с профилями клиентов
+### 3\. [Airline API](./airline-api/) — REST API для работы с профилями клиентов
 
 Микросервис для управления профилями клиентов и бронированиями.
 
@@ -162,7 +135,7 @@ FastAPI сервер с реализацией ChatKit-бэкенда c AI-аг�
 
 **Развертывание:** Yandex Cloud Serverless Containers \+ MCP Gateway
 
-📖 [**Подробная документация →**](http://./airline-api/README.md)
+📖 [**Подробная документация →**](./airline-api/README.md)
 
 ---
 
@@ -173,4 +146,4 @@ FastAPI сервер с реализацией ChatKit-бэкенда c AI-аг�
 3. **A2A Agent** → Serverless Container  
 4. **Frontend** → Object Storage (веб-хостинг)
 
-Подробные инструкции по развертыванию в README каждого компонента.  
+Подробные инструкции по развертыванию в README каждого компонента.
