@@ -20,6 +20,8 @@ Customer Support ChatBot — это демонстрационное прило�
 - 💾 Персистентное хранение в YDB Document API  
 - 🚀 Развертывание в Yandex Cloud
 
+> 🚀 **[Повторить с AI Studio →](https://aistudio.yandex.ru/platform?utm_source=github&utm_medium=owned&utm_campaign=t:info;gl:lgen&utm_content=cookbook_customer_support_chatbot)**
+
 ## 🏗️ Архитектура
 
 Проект состоит из четырех независимых микросервисов:
